@@ -1,0 +1,9 @@
+
+commerce_note.commerce_note_order_note_form:
+  path: '/admin/commerce/orders/{commerce_order}/note'
+  defaults:
+    _form: '\Drupal\commerce_note\Form\OrderNoteForm'
+    _title: '修改管理员订单备注'
+  requirements:
+    _permission: 'modify commerce order note'
+  

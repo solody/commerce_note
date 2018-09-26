@@ -1,0 +1,63 @@
+<?php
+
+/**
+ * @file
+ * Contains commerce_note.module.
+ */
+
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function commerce_note_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the commerce_note module.
+    case 'help.page.commerce_note':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('My Awesome Module') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+
+/**
+ * Implements hook_entity_base_field_info().
+ */
+function commerce_note_entity_base_field_info(EntityTypeInterface $entity_type) {
+  $fields = [];
+  if ($entity_type->id() == 'commerce_order') {
+
+    $fields['order_note'] = BaseFieldDefinition::create('string_long')
+      ->setLabel(t('管理员订单备注'))
+      ->setDefaultValue('')
+      ->setDisplayOptions('view', [
+        'label' => 'above',
+        'type' => 'string'
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'string_textarea'
+      ])
+      ->setDisplayConfigurable('view', true)
+      ->setDisplayConfigurable('form', true);
+  }
+  return $fields;
+}
+
+function commerce_note_entity_operation(Drupal\Core\Entity\EntityInterface $entity) {
+  $operations = [];
+  if ($entity->getEntityTypeId() === 'commerce_order' && \Drupal::currentUser()->hasPermission('modify commerce order note')) {
+    $operations['note'] = [
+      'title' => t('管理员备注'),
+      'url' => \Drupal\Core\Url::fromRoute('commerce_note.commerce_note_order_note_form', ['commerce_order' => $entity->id()]),
+      'weight' => 20,
+    ];
+  }
+  return $operations;
+
+}
